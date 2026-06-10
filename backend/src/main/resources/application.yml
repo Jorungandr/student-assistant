@@ -8,7 +8,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/student_assistant?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
     username: root
-    password: root
+    password: jorungandr
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
@@ -27,4 +27,3 @@ app:
   jwt:
     secret: student-assistant-secret-key-for-development-only-please-change
     expiration-minutes: 1440
-
