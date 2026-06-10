@@ -30,7 +30,7 @@ class AuthServiceTest {
 
     @Test
     void duplicateUsernameCannotRegister() {
-        RegisterRequest request = registerRequest("auth_test_duplicate");
+        RegisterRequest request = registerRequest(uniqueUsername("duplicate"));
         authService.register(request);
 
         assertThatThrownBy(() -> authService.register(request))
@@ -40,10 +40,11 @@ class AuthServiceTest {
 
     @Test
     void loginFailsWithWrongPassword() {
-        authService.register(registerRequest("auth_test_wrong_password"));
+        String username = uniqueUsername("wrong_password");
+        authService.register(registerRequest(username));
 
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername("auth_test_wrong_password");
+        loginRequest.setUsername(username);
         loginRequest.setPassword("bad-password");
 
         assertThatThrownBy(() -> authService.login(loginRequest))
@@ -53,16 +54,21 @@ class AuthServiceTest {
 
     @Test
     void loginSucceedsWithCorrectPassword() {
-        authService.register(registerRequest("auth_test_success"));
+        String username = uniqueUsername("success");
+        authService.register(registerRequest(username));
 
         LoginRequest loginRequest = new LoginRequest();
-        loginRequest.setUsername("auth_test_success");
+        loginRequest.setUsername(username);
         loginRequest.setPassword("password123");
 
         LoginResponse response = authService.login(loginRequest);
 
         assertThat(response.getToken()).isNotBlank();
-        assertThat(response.getUser().getUsername()).isEqualTo("auth_test_success");
+        assertThat(response.getUser().getUsername()).isEqualTo(username);
+    }
+
+    private String uniqueUsername(String suffix) {
+        return "auth_test_" + suffix + "_" + System.nanoTime();
     }
 
     private RegisterRequest registerRequest(String username) {
@@ -74,4 +80,3 @@ class AuthServiceTest {
         return request;
     }
 }
-
