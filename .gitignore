@@ -6,4 +6,6 @@ target/
 *.iml
 *.log
 .env
-
+.tmp_doc_work/
+.tmp_extracted_docs/
+实验成果物/

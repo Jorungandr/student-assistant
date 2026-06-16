@@ -6,9 +6,9 @@ spring:
     name: student-assistant
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/student_assistant?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false
-    username: root
-    password: jorungandr
+    url: ${DB_URL:jdbc:mysql://localhost:3306/student_assistant?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:jorungandr}
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
@@ -23,7 +23,7 @@ mybatis-plus:
 
 app:
   cors:
-    allowed-origin: http://localhost:5173
+    allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:5173}
   jwt:
-    secret: student-assistant-secret-key-for-development-only-please-change
-    expiration-minutes: 1440
+    secret: ${JWT_SECRET:student-assistant-secret-key-for-development-only-please-change}
+    expiration-minutes: ${JWT_EXPIRATION_MINUTES:1440}

@@ -30,10 +30,21 @@ public class HealthRecordServiceImpl implements HealthRecordService {
 
     @Transactional
     public HealthRecord create(Long userId, HealthRecordRequest request) {
-        HealthRecord record = new HealthRecord();
-        record.setUserId(userId);
+        HealthRecord record = mapper.selectOne(new LambdaQueryWrapper<HealthRecord>()
+                .eq(HealthRecord::getUserId, userId)
+                .eq(HealthRecord::getRecordDate, request.getRecordDate())
+                .last("LIMIT 1"));
+        boolean exists = record != null;
+        if (!exists) {
+            record = new HealthRecord();
+            record.setUserId(userId);
+        }
         copy(request, record);
-        mapper.insert(record);
+        if (exists) {
+            mapper.updateById(record);
+        } else {
+            mapper.insert(record);
+        }
         return record;
     }
 
@@ -72,4 +83,3 @@ public class HealthRecordServiceImpl implements HealthRecordService {
         record.setNote(request.getNote());
     }
 }
-

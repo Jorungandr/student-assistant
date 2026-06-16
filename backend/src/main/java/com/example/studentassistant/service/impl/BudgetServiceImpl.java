@@ -33,10 +33,22 @@ public class BudgetServiceImpl implements BudgetService {
 
     @Transactional
     public Budget create(Long userId, BudgetRequest request) {
-        Budget budget = new Budget();
-        budget.setUserId(userId);
+        Budget budget = budgetMapper.selectOne(new LambdaQueryWrapper<Budget>()
+                .eq(Budget::getUserId, userId)
+                .eq(Budget::getMonth, request.getMonth())
+                .eq(Budget::getCategory, request.getCategory())
+                .last("LIMIT 1"));
+        boolean exists = budget != null;
+        if (!exists) {
+            budget = new Budget();
+            budget.setUserId(userId);
+        }
         copy(request, budget);
-        budgetMapper.insert(budget);
+        if (exists) {
+            budgetMapper.updateById(budget);
+        } else {
+            budgetMapper.insert(budget);
+        }
         return budget;
     }
 
@@ -96,4 +108,3 @@ public class BudgetServiceImpl implements BudgetService {
         budget.setWarningThreshold(request.getWarningThreshold() == null ? BigDecimal.valueOf(80) : request.getWarningThreshold());
     }
 }
-

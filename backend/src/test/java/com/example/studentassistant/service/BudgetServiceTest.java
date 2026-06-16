@@ -33,6 +33,23 @@ class BudgetServiceTest {
         assertThat(warnings).anyMatch(item -> "餐饮".equals(item.getCategory()) && "WARNING".equals(item.getStatus()));
     }
 
+    @Test
+    void creatingSameMonthCategoryBudgetUpdatesExistingRecord() {
+        Long userId = createUser("budget_upsert");
+        String month = YearMonth.now().toString();
+        budgetService.create(userId, budget(month, "交通", "100.00", "80.00"));
+        budgetService.create(userId, budget(month, "交通", "200.00", "70.00"));
+
+        List<BudgetWarningResponse> warnings = budgetService.warnings(userId);
+
+        assertThat(warnings).filteredOn(item -> "交通".equals(item.getCategory()))
+                .singleElement()
+                .satisfies(item -> {
+                    assertThat(item.getBudgetAmount()).isEqualByComparingTo("200.00");
+                    assertThat(item.getStatus()).isEqualTo("NORMAL");
+                });
+    }
+
     private Long createUser(String suffix) {
         RegisterRequest request = new RegisterRequest();
         request.setUsername("test_" + suffix + "_" + System.nanoTime());
@@ -59,4 +76,3 @@ class BudgetServiceTest {
         return request;
     }
 }
-
